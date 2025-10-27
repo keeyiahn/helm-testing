@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-configmap
 data:
-  myvalue: {{ .Values.favourite.drink | quote }}
+  vertices: 
+{{ toYaml .Values.vertices | indent 4 }}
