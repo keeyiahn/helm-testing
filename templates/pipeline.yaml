@@ -4,9 +4,54 @@ metadata:
   name: {{ .Release.Name }}
 spec:
   vertices: 
-{{ toYaml .Values.vertices | indent 4 }}
+{{- range .Values.vertices }}
+    - name: {{ .name }}
+      scale:
+        min: 1
+
+{{- if .source }}
+      source: 
+{{ toYaml .source | indent 8 }}
+{{- end }}
+
+{{- if .udf }}
+      udf:
+{{ toYaml .udf | indent 8 }}
+{{- if .udf.dlq }}
+    - name: {{ .name }}-dlq
+      scale:
+        min: 1
+      sink:
+        log: {}
+{{- end }}
+{{- end }}
+
+{{- if .sink }}
+      sink:
+{{ toYaml .sink | indent 8 }}     
+{{- end }}
+
+{{- end }}
+
+
   edges:
-    - from: in
-      to: cat
-    - from: cat
-      to: out
+{{- $vertices := .Values.vertices }}
+{{- range $i, $v := $vertices }}
+
+{{- if .next }}
+
+{{- range .next }}
+    - from: {{ $v.name }}
+      to: {{ . }}
+{{- end }}
+
+{{- else if lt (add $i 1) (len $vertices) }}
+    - from: {{ $v.name }}
+      to: {{ (index $vertices (add $i 1)).name }}
+{{- if and $v.udf $v.udf.dlq }}
+    - from: {{ $v.name }}
+      to: {{ $v.name }}-dlq
+{{- end }}
+{{- end }}
+
+{{- end }}

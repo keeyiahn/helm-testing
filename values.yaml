@@ -1,21 +1,23 @@
 vertices:
   - name: in
-    scale:
-      min: 1
-    # A self data generating source
+    next: [cat]
     source:
-      generator:
-        rpu: 5
-        duration: 1s
+      generator: {}
+  - name: in2
+    next: [cat]
+    source:
+      generator: {}
   - name: cat
-    scale:
-      min: 1
+    udf:
+      dlq: true
+      container:
+        image: quay.io/numaio/numaflow-go/map-cat:stable 
+        imagePullPolicy: Always
+  - name: cat2
     udf:
       container:
-        image: quay.io/numaio/numaflow-go/map-cat:stable # A UDF which simply cats the message
+        image: quay.io/numaio/numaflow-go/map-cat:stable 
         imagePullPolicy: Always
   - name: out
-    scale:
-      min: 1
     sink:
       log: {}
