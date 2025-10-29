@@ -42,16 +42,21 @@ spec:
 
 {{- range .next }}
     - from: {{ $v.name }}
-      to: {{ . }}
+      to: {{ .name }}
+{{- if .conditions}}
+      conditions:
+{{ toYaml .conditions | indent 8 }}
+{{- end }}
 {{- end }}
 
-{{- else if lt (add $i 1) (len $vertices) }}
+{{- else if and (not $v.sink) (lt (add $i 1) (len $vertices)) }}
     - from: {{ $v.name }}
       to: {{ (index $vertices (add $i 1)).name }}
+{{- end }}
+
 {{- if and $v.udf $v.udf.dlq }}
     - from: {{ $v.name }}
       to: {{ $v.name }}-dlq
-{{- end }}
 {{- end }}
 
 {{- end }}
