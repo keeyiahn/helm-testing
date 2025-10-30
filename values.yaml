@@ -1,23 +1,62 @@
+# vertices:
+#   - name: in
+#     source:
+#       generator: {}
+
+#   - name: cat
+#     next:
+#       - name: cat2
+#     udf:
+#       dlq: true
+#       container:
+#         image: quay.io/numaio/numaflow-go/map-cat:stable 
+#         imagePullPolicy: Always
+
+#   - name: in2
+#     source:
+#       generator: {}
+
+#   - name: cat2
+#     next:
+#       - name: out1
+#       - name: out2
+#     udf:
+#       container:
+#         image: quay.io/numaio/numaflow-go/map-cat:stable 
+#         imagePullPolicy: Always
+
+#   - name: out1
+#     sink:
+#       log: {}
+#   - name: out2
+#     sink:
+#       log: {}
+
 vertices:
   - name: in
-    next: [cat]
     source:
       generator: {}
-  - name: in2
-    next: [cat]
-    source:
-      generator: {}
-  - name: cat
+
+  - name: cat1
     udf:
       dlq: true
       container:
         image: quay.io/numaio/numaflow-go/map-cat:stable 
         imagePullPolicy: Always
+
   - name: cat2
+    next:
+      - name: out1
+      - name: out2
     udf:
       container:
         image: quay.io/numaio/numaflow-go/map-cat:stable 
         imagePullPolicy: Always
-  - name: out
+
+  - name: out1
+    sink:
+      log: {}
+      
+  - name: out2
     sink:
       log: {}
