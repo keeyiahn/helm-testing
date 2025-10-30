@@ -9,6 +9,17 @@ spec:
       scale:
         min: 1
 
+{{- if .preset }}
+{{- $presetName := .preset }}
+{{- range $.Values.presets }}
+{{- if eq .name $presetName }}
+{{- $withoutName := omit . "name" }}
+{{ toYaml $withoutName | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+
 {{- if .source }}
       source: 
 {{ toYaml .source | indent 8 }}
